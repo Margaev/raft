@@ -1,0 +1,87 @@
+version: '3.8' 
+
+services: 
+  raft-1:
+    container_name: raft-1
+    build: 
+      context: . 
+      dockerfile: Dockerfile 
+    ports: 
+    - 12121:12121 
+    environment:
+      - HOST=raft-1
+      - PORT=12121
+      - NODES=raft-1:12121,raft-2:12122,raft-3:12123,raft-4:12124,raft-5:12125
+    networks:
+      - raft-network
+    volumes:
+      - .:/opt/app
+
+  raft-2:
+    container_name: raft-2
+    build: 
+      context: . 
+      dockerfile: Dockerfile 
+    ports: 
+    - 12122:12122 
+    environment:
+      - HOST=raft-2
+      - PORT=12122
+      - NODES=raft-1:12121,raft-2:12122,raft-3:12123,raft-4:12124,raft-5:12125
+    networks:
+      - raft-network
+    volumes:
+      - .:/opt/app
+
+  raft-3:
+    container_name: raft-3
+    build: 
+      context: . 
+      dockerfile: Dockerfile 
+    ports: 
+    - 12123:12123
+    environment:
+      - HOST=raft-3
+      - PORT=12123
+      - NODES=raft-1:12121,raft-2:12122,raft-3:12123,raft-4:12124,raft-5:12125
+    networks:
+      - raft-network
+    volumes:
+      - .:/opt/app
+  
+  raft-4:
+    container_name: raft-4
+    build: 
+      context: . 
+      dockerfile: Dockerfile 
+    ports: 
+    - 12124:12124
+    environment:
+      - HOST=raft-4
+      - PORT=12124
+      - NODES=raft-1:12121,raft-2:12122,raft-3:12123,raft-4:12124,raft-5:12125
+    networks:
+      - raft-network
+    volumes:
+      - .:/opt/app
+    
+  raft-5:
+    container_name: raft-5
+    build: 
+      context: . 
+      dockerfile: Dockerfile 
+    ports: 
+    - 12125:12125
+    environment:
+      - HOST=raft-5
+      - PORT=12125
+      - NODES=raft-1:12121,raft-2:12122,raft-3:12123,raft-4:12124,raft-5:12125
+    networks:
+      - raft-network
+    volumes:
+      - .:/opt/app
+
+
+networks:
+  raft-network:
+    name: raft-network

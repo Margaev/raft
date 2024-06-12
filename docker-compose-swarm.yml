@@ -1,0 +1,29 @@
+version: '3.8' 
+
+services: 
+  raft:
+    deploy:
+      mode: replicated
+      replicas: 5
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: none
+    image: 127.0.0.1:5000/raft
+    build: 
+      context: . 
+      dockerfile: Dockerfile 
+    environment:
+      - port=12121
+      - task_name={{.Task.Name}}
+      - service_name={{.Service.Name}}
+      - service_id={{.Service.ID}}
+      - node_id={{.Task.Slot}}
+      - NODES=raft-1:12121,raft-2:12122,raft-3:12123,raft-4:12124,raft-5:12125
+    networks:
+      - raft-network
+    volumes:
+      - .:/opt/app
+
+networks:
+  raft-network:
+    name: raft-network
