@@ -4,6 +4,7 @@ import random
 import json
 
 from settings import settings
+from service_discovery import ServiceDiscovery
 
 
 class RaftState(enum.Enum):
@@ -29,10 +30,10 @@ class Timeout:
 
 
 class RaftStateMachine:
-    def __init__(self, address: str, port: int, nodes: list) -> None:
+    def __init__(self, address: str, port: int, sd: ServiceDiscovery) -> None:
         self.address = address
         self.port = port
-        self.nodes = nodes
+        self.sd = sd
         self.term = 0
         self.voted_for = None
         self.votes_received = 0
@@ -169,7 +170,8 @@ class RaftStateMachine:
     def handle_response_vote(self, vote_granted, term):
         if vote_granted:
             self.votes_received += 1
-            if self.votes_received >= len(self.nodes) // 2:
+            if self.votes_received >= len(self.sd.nodes) // 2 and self.votes_received >= 2:
+            # if self.votes_received >= len(self.sd.nodes) // 2:
                 self.state = RaftState.LEADER
                 self.votes_received = 0
         else:
