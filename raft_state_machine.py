@@ -170,8 +170,7 @@ class RaftStateMachine:
     def handle_response_vote(self, vote_granted, term):
         if vote_granted:
             self.votes_received += 1
-            if self.votes_received >= len(self.sd.nodes) // 2 and self.votes_received >= 2:
-            # if self.votes_received >= len(self.sd.nodes) // 2:
+            if self.votes_received > len(self.sd.nodes) // 2:
                 self.state = RaftState.LEADER
                 self.votes_received = 0
         else:

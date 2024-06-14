@@ -21,7 +21,6 @@ class RaftServer:
     ):
         self.raft_state_machine: RaftStateMachine = raft_state_machine
         self.protocol = protocol
-        self.sockets = {}
         self.q = queue.Queue()
         self.server_socket = None
         self.heartbeat_interval = hearbeat_interval
@@ -73,11 +72,9 @@ class RaftServer:
             response_op, response_data = self.send_message_to_node(address, port, op, data)
         except message.ClientDisconnected:
             logging.info(f"client {address}:{port} disconnected")
-            self.sockets.pop((address, port))
             self.sd.invalidate_nodes()
         except OSError:
             logging.error(f"error sending message to {address}:{port}")
-            self.sockets.pop((address, port))
             self.sd.invalidate_nodes()
         else:
             logging.info(f"received response from {address}:{port}: {response_op} {response_data}")
