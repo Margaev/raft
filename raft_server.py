@@ -35,7 +35,10 @@ class RaftServer:
     def handle_clients(self):
         while True:
             client, address = self.server_socket.accept()
+            address = address[0]
             logging.info(f"received connection from {client}:{address}")
+            if (address, self.sd.port) not in self.sd.nodes:
+                self.sd.invalidate_nodes()
             threading.Thread(target=self.handle_client, args=(client, address), daemon=True).start()
 
     def handle_client(self, client: socket.socket, address: str):
@@ -79,7 +82,7 @@ class RaftServer:
         else:
             logging.info(f"received response from {address}:{port}: {response_op} {response_data}")
             self.raft_state_machine.handle_response(response_op, response_data)
-    
+
     def broadcast_message(self, op: str, data: dict):
         """
         Threaded function to broadcast a message to all nodes in the cluster
